@@ -1,14 +1,6 @@
 <?php 
 
 /**
- * Check for the required config.php file 
- */
-if(!file_exists(dirname(__FILE__) . '/config.php'))
-{
-	die('Setup not complete: Copy config.template.php to config.php and modify the configuration settings to match your environment.');
-}
-
-/**
  * Helper functions for fetching data from GET/POST/REQUEST
  */
 function get($key)
