@@ -5,7 +5,7 @@ class Geonames
 {
 	protected static function _queryURL($url, $mcKey=FALSE)
 	{
-		if(MEMCACHE_ENABLED && ($data=mc()->get($mcKey)) != FALSE)
+		if(MEMCACHE_ENABLED && $mcKey && ($data=mc()->get($mcKey)) != FALSE)
 			$json = $data;
 		else
 		{
@@ -21,7 +21,7 @@ class Geonames
 			$json = json_decode($json);
 
 			if(MEMCACHE_ENABLED && $mcKey)
-				mc()->set($mcKey, $json, 0, 3600);
+				mc()->set($mcKey, $json, 0, 86400 * 7);
 		}
 
 		return $json;
@@ -30,7 +30,7 @@ class Geonames
 	public static function getNearestIntersection($lat, $lng)
 	{
 		$url = 'http://ws.geonames.org/findNearestIntersectionJSON?formatted=true&lat=' . $lat . '&lng=' . $lng . '&style=full';
-		$mcKey = Site::mcKey(get_called_class(), 'intersection/' . $lat . ',' . $lng);
+		$mcKey = self::mcKey('intersection', $lat . ',' . $lng);
 
 		$json = self::_queryURL($url, $mcKey);
 
@@ -42,7 +42,7 @@ class Geonames
 	public static function getNearestIntersectionWithCity($lat, $lng)
 	{
 		$url = 'http://ws.geonames.org/findNearestIntersectionJSON?formatted=true&lat=' . $lat . '&lng=' . $lng . '&style=full';
-		$mcKey = Site::mcKey(get_called_class(), 'intersection:' . $lat . ',' . $lng);
+		$mcKey = self::mcKey('intersection', $lat . ',' . $lng);
 
 		$json = self::_queryURL($url, $mcKey);
 
@@ -54,6 +54,11 @@ class Geonames
 			. ', ' . k($json->intersection, 'placename') . ', ' . k($json->intersection, 'adminName1');
 				
 		return $intersection;
+	}
+	
+	private function mcKey($method, $data)
+	{
+		return 'Geonames::' . $method . ':' . $data;
 	}
 }
 ?>
