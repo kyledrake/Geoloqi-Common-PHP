@@ -52,6 +52,13 @@ function request($key)
 	else
 		return FALSE;
 }
+function session($key)
+{
+	if(array_key_exists($key, $_SESSION))
+		return $_SESSION[$key];
+	else
+		return FALSE;
+}
 
 // Retrieves $key from $object without throwing a notice, and works whether $object is an array or object
 function k($object, $key, $notfound=NULL)
@@ -110,7 +117,7 @@ function mc()
 	if(!isset($memcache))
 	{
 		if(!class_exists('Memcache'))
-			die(json_encode(array('error'=>'memcache_error', 'error_description'=>'Class Memcache was not found. Disable Memcache in the config file or install Memcache.')));
+			die('Class Memcache was not found. Disable Memcache in the config file or install Memcache.');
 		
 		$memcache = new Memcache;
 		foreach($GLOBALS['MEMCACHE_SERVERS'] as $m)
@@ -124,7 +131,12 @@ class NullMemcache
 {
 	public function __call($method, $params)
 	{
-		die(json_encode(array('error'=>'memcache_error', 'error_description'=>'Attempted to use Memcache but it has not been configured properly.')));
+		die('Attempted to use Memcache but it has not been configured properly.');
+	}
+	
+	public function set($method, $params)
+	{
+		return null;
 	}
 }
 
