@@ -58,7 +58,9 @@ class Facebook
 
 	public function _request($url, $post=FALSE)
 	{
-		return file_get_contents($url);
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		return curl_exec($ch);
 	}
 
 	public function graph($method, $params=array(), $post=FALSE)

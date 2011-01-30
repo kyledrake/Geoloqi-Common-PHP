@@ -12,7 +12,7 @@ class Geonames
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 			$json = curl_exec($ch);
 
 			if(!$json)
@@ -21,7 +21,7 @@ class Geonames
 			$json = json_decode($json);
 
 			if(MEMCACHE_ENABLED && $mcKey)
-				mc()->set($mcKey, $json, 0, 86400 * 7);
+				mc()->set($mcKey, $json, 0, 86400 * 30);
 		}
 
 		return $json;
@@ -33,6 +33,9 @@ class Geonames
 		$mcKey = self::mcKey('intersection', $lat . ',' . $lng);
 
 		$json = self::_queryURL($url, $mcKey);
+
+		if(k($json, 'intersection') == FALSE)
+			return FALSE;
 
 		$intersection = $json->intersection->street1 . ' & ' . preg_replace('/^(SE|SW|NE|NW|N|E|S|W) /', '', $json->intersection->street2);
 		
