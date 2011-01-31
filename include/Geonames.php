@@ -1,6 +1,4 @@
 <?php
-require_once('Site.php');
-
 class Geonames
 {
 	protected static function _queryURL($url, $mcKey=FALSE)
