@@ -69,14 +69,20 @@ class Foursquare
 		if($this->accessToken)
 			$params['oauth_token'] = $this->accessToken;
 			
-		$url = 'https://api.foursquare.com/v2/' . $method . '?' . http_build_query($params);
-
-		$ch = curl_init($url);
+		$url = 'https://api.foursquare.com/v2/' . $method;
+		
 		if($post)
 		{
+			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_POST, TRUE);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
+			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
 		}
+		else
+		{
+			$url .= '?' . http_build_query($params);
+			$ch = curl_init($url);
+		}
+		
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		$json = curl_exec($ch);
 		
@@ -88,7 +94,10 @@ class Foursquare
 	
 	private function _buildRedirectURI()
 	{
-		return $this->_baseRedirect . '?oauth_callback';
+		if(strpos($this->_baseRedirect, '?'))
+			return $this->_baseRedirect . '&oauth_callback';
+		else
+			return $this->_baseRedirect . '?oauth_callback';
 	}
 
 }
