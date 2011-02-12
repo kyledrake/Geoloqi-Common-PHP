@@ -74,6 +74,20 @@ function k($object, $key, $notfound=NULL)
 }
 
 /**
+ * Returns "http" or "https" depending on whether the page was viewed over https
+ */
+function https($uri=FALSE)
+{
+	if($uri)
+	{
+		$prefix = https();
+		return preg_replace('|^https?://|', $prefix, $uri);
+	}
+	else
+		return (k($_SERVER, 'HTTPS') == 'on' ? 'https://' : 'http://');
+}
+
+/**
  * Returns a handle to the DB object
  */
 function db()
