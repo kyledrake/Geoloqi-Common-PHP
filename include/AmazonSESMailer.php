@@ -18,25 +18,6 @@
 '---------------------------------------------------------------------------'
 */
 
-/**************************
-  Instructions:
-
-	Install the AWS SDK for PHP from http://aws.amazon.com/sdkforphp/
-	Easiest way is to use their PEAR channel
-	http://pear.amazonwebservices.com/
-	
-	# pear channel-discover pear.amazonwebservices.com
-	# pear install aws/sdk
-	
-	Create a mailer class with your Amazon ID/Secret in the constructor
-	$mailer = new AmazonSESMailer('your id', 'your secret');
-	
-	Then use this object like you would use PHPMailer normally!
-	$mailer->AddAddress('you@example.com');
-	...etc
-	$mailer->Send();
-***************************/
- 
 require_once('AWSSDKforPHP/sdk.class.php');
 require_once('AWSSDKforPHP/services/ses.class.php');
 require_once('PHPMailer-lite.php');
@@ -72,7 +53,7 @@ class AmazonSESMailer extends PHPMailerLite {
 					'Source' => $this->From,
 					'Destinations' => $val
 				));
-			var_dump($response);
+				
 				// implement call back function if it exists
 				$isSent = ($response->isOK()) ? 1 : 0;
 				$this->doCallback($isSent,$val,$this->cc,$this->bcc,$this->Subject,$body);

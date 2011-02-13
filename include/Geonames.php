@@ -28,7 +28,7 @@ class Geonames
 	public static function getNearestIntersection($lat, $lng)
 	{
 		$url = 'http://ws.geonames.org/findNearestIntersectionJSON?formatted=true&lat=' . $lat . '&lng=' . $lng . '&style=full';
-		$mcKey = self::mcKey('intersection', $lat . ',' . $lng);
+		$mcKey = self::_mcKey('intersection', $lat . ',' . $lng);
 
 		$json = self::_queryURL($url, $mcKey);
 
@@ -43,7 +43,7 @@ class Geonames
 	public static function getNearestIntersectionWithCity($lat, $lng)
 	{
 		$url = 'http://ws.geonames.org/findNearestIntersectionJSON?formatted=true&lat=' . $lat . '&lng=' . $lng . '&style=full';
-		$mcKey = self::mcKey('intersection', $lat . ',' . $lng);
+		$mcKey = self::_mcKey('intersection', $lat . ',' . $lng);
 
 		$json = self::_queryURL($url, $mcKey);
 
@@ -57,7 +57,7 @@ class Geonames
 		return $intersection;
 	}
 	
-	private function mcKey($method, $data)
+	private static function _mcKey($method, $data)
 	{
 		return 'Geonames::' . $method . ':' . $data;
 	}
