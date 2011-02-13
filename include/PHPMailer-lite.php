@@ -234,9 +234,9 @@ class PHPMailerLite {
   // PROPERTIES, PRIVATE AND PROTECTED
   /////////////////////////////////////////////////
 
-  private   $to             = array();
-  private   $cc             = array();
-  private   $bcc            = array();
+  protected $to             = array();
+  protected $cc             = array();
+  protected $bcc            = array();
   private   $ReplyTo        = array();
   private   $all_recipients = array();
   private   $attachment     = array();
@@ -488,14 +488,9 @@ class PHPMailerLite {
       }
 
       // Choose the mailer and send through it
-      switch($this->Mailer) {
-        case 'sendmail':
-          $sendAction = $this->SendmailSend($header, $body);
-          return $sendAction;
-        default:
-          $sendAction = $this->MailSend($header, $body);
-          return $sendAction;
-      }
+      $sendFunction = $this->GetSendFunction($this->Mailer);
+      $sendAction = $this->{$sendFunction}($header, $body);
+      return $sendAction;
 
     } catch (phpmailerException $e) {
       $this->SetError($e->getMessage());
@@ -505,6 +500,15 @@ class PHPMailerLite {
       echo $e->getMessage()."\n";
       return false;
     }
+  }
+
+  protected function GetSendFunction($mailer) {
+  	switch($mailer) {
+      case 'sendmail':
+        return 'SendmailSend';
+      default:
+        return 'MailSend';
+  	}
   }
 
   /**
