@@ -146,6 +146,41 @@ class NullMemcache
 	}
 }
 
+/**
+ * Returns a handle to the Beanstalk client 
+ */
+function bs()
+{
+	global $BEANSTALK_SERVERS;
+
+	if(!isset($BEANSTALK_SERVERS))
+		return new NullPheanstalk;
+
+	if(!array_key_exists(0, $BEANSTALK_SERVERS))
+		return new NullPheanstalk;
+		
+	static $pheanstalk;
+	if(!isset($pheanstalk))
+	{
+		$k = array_rand($BEANSTALK_SERVERS);
+		$pheanstalk = new Pheanstalk($BEANSTALK_SERVERS[$k]['host'], $BEANSTALK_SERVERS[$k]['port']);
+	}
+	return $pheanstalk;
+}
+
+class NullPheanstalk
+{
+	public function __call($method, $params)
+	{
+		die('Attempted to use Beanstalk client but it has not been configured properly.');
+	}
+	
+	public function set($method, $params)
+	{
+		return null;
+	}
+}
+
 
 /**
  * For HTML formatting arrays for debugging
