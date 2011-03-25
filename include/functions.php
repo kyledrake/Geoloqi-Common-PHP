@@ -37,12 +37,28 @@ function post($key, $val=NULL)
 			$_POST[$key] = $val;
 	}
 }
-function request($key)
+function request($key, $val=NULL)
 {
-	if(array_key_exists($key, $_REQUEST))
-		return $_REQUEST[$key];
+	if(is_object($_REQUEST))
+	{
+		if($val == NULL)
+			if(property_exists($_REQUEST, $key))
+				return $_REQUEST->{$key};
+			else
+				return FALSE;
+		else
+			$_REQUEST->{$key} = $val;
+	}
 	else
-		return FALSE;
+	{
+		if($val == NULL)
+			if(array_key_exists($key, $_REQUEST))
+				return $_REQUEST[$key];
+			else
+				return FALSE;
+		else
+			$_REQUEST[$key] = $val;
+	}
 }
 function session($key)
 {
