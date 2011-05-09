@@ -74,8 +74,21 @@ class GoogleAuth
 
 	public function request($url, $params=array(), $post=FALSE)
 	{
-		if($this->accessToken)
+		if($this->accessToken) {
+			// If there is an access token present, use it
 			$params['oauth_token'] = $this->accessToken;
+		} elseif($this->refreshToken) {
+			// If there is no access token, then use the refresh token if present to get a new access token
+			if($this->_refreshToken()) {
+				$params['oauth_token'] = $this->accessToken;
+			} else {
+				// Failed to get an access token using the refresh token
+				return FALSE;
+			}
+		} else {
+			// If there is no access token or refresh token, can't do anything
+			return FALSE;
+		}
 
 		$params['alt'] = 'jsonc';
 			
@@ -99,6 +112,33 @@ class GoogleAuth
 			return json_decode($json);
 		else
 			return FALSE;
+	}
+	
+	private function _refreshToken()
+	{
+		if(!$this->refreshToken)
+			return FALSE;
+	
+		$params = array(
+			'client_id' => $this->_clientID,
+			'grant_type' => 'refresh_token',
+			'client_secret' => $this->_clientSecret,
+			'refresh_token' => $this->refreshToken
+		);
+	
+		$token = $this->_request('https://accounts.google.com/o/oauth2/token', $params);
+		$token = json_decode($token);
+
+		if(is_object($token) && k($token, 'access_token'))
+		{
+			$this->accessToken = $token->access_token;
+			$this->refreshToken = $token->refresh_token;
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 	
 	private function _buildRedirectURI()
