@@ -63,12 +63,19 @@ class InstamapperClient
 		if($result === FALSE)
 			irc_debug('Instamapper Error: ' . curl_error($ch));
 		
+		$this->log($result);
 		return $result;
 	}
 
 	public function login()
 	{
 		$result = $this->_curl('https://www.instamapper.com/fe', array('action'=>'login', 'username'=>INSTAMAPPER_USERNAME, 'password'=>INSTAMAPPER_PASSWORD));
+	}
+	public function log($str)
+	{
+		$fp = fopen('/tmp/instamapper.log', 'a');
+		fputs($fp, $str."\n");
+		fclose($fp);
 	}
 }
 ?>

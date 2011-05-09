@@ -103,22 +103,46 @@ function https($uri=FALSE)
 		return (k($_SERVER, 'HTTPS') == 'on' ? 'https://' : 'http://');
 }
 
+class DB_Var {
+	static $db;
+	static $db_slave;
+}
+
+
 /**
  * Returns a handle to the DB object
  */
 function db()
 {
-	static $db;
-	if(!isset($db))
+	if(!isset(DB_Var::$db))
 	{
 		try {
-			$db = new PDO(PDO_DSN, PDO_USER, PDO_PASS);
+			DB_Var::$db = new PDO(PDO_DSN, PDO_USER, PDO_PASS);
 		} catch (PDOException $e) {
 			header('HTTP/1.1 500 Server Error');
 			die(json_encode(array('error'=>'database_error', 'error_description'=>'Connection failed: ' . $e->getMessage())));
 		}
 	}
-	return $db;
+	return DB_Var::$db;
+}
+
+/**
+ * Returns a handle to the DB object
+ */
+function db_slave()
+{
+	return db();
+
+	if(!isset(DB_Var::$db_slave))
+	{
+		try {
+			DB_Var::$db_slave = new PDO(SLAVE_PDO_DSN, SLAVE_PDO_USER, SLAVE_PDO_PASS);
+		} catch (PDOException $e) {
+			header('HTTP/1.1 500 Server Error');
+			die(json_encode(array('error'=>'database_error', 'error_description'=>'Connection failed: ' . $e->getMessage())));
+		}
+	}
+	return DB_Var::$db_slave;
 }
 
 /**

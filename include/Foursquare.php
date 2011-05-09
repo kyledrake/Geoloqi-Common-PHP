@@ -84,6 +84,8 @@ class Foursquare
 		}
 		
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 		$json = curl_exec($ch);
 		
 		if($json)
