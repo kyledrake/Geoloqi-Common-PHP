@@ -131,18 +131,21 @@ function db()
  */
 function db_slave()
 {
-	return db();
-
-	if(!isset(DB_Var::$db_slave))
-	{
-		try {
-			DB_Var::$db_slave = new PDO(SLAVE_PDO_DSN, SLAVE_PDO_USER, SLAVE_PDO_PASS);
-		} catch (PDOException $e) {
-			header('HTTP/1.1 500 Server Error');
-			die(json_encode(array('error'=>'database_error', 'error_description'=>'Connection failed: ' . $e->getMessage())));
+	// Get the replication heartbeat from memcache. If it's newer than 30 seconds ago, use the slave.
+	if(mc()->get('db::replication_date') > (time() - 30)) {
+		if(!isset(DB_Var::$db_slave))
+		{
+			try {
+				DB_Var::$db_slave = new PDO(SLAVE_PDO_DSN, SLAVE_PDO_USER, SLAVE_PDO_PASS);
+			} catch (PDOException $e) {
+				// If the slave connection failed, fall back to the master instead
+				return db();
+			}
 		}
+		return DB_Var::$db_slave;
+	} else {
+		return db();
 	}
-	return DB_Var::$db_slave;
 }
 
 /**
