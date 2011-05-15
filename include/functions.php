@@ -132,7 +132,7 @@ function db()
 function db_slave()
 {
 	// Get the replication heartbeat from memcache. If it's newer than 30 seconds ago, use the slave.
-	if(mc()->get('db::replication_date') > (time() - 30)) {
+	if(MEMCACHE_ENABLED && mc()->get('db::replication_date') > (time() - 30)) {
 		if(!isset(DB_Var::$db_slave))
 		{
 			try {
@@ -180,7 +180,7 @@ class NullMemcache
 {
 	public function __call($method, $params)
 	{
-		die('Attempted to use Memcache but it has not been configured properly.');
+		die('Attempted to call Memcache::' . $method . ' but it has not been configured properly.');
 	}
 	
 	public function set($method, $params)
@@ -250,7 +250,7 @@ function irc_debug($msg)
 
 	$msg = '[' . LOG_PREFIX . '] ' . $msg;
 	
-	socket_sendto($sock, $msg, strlen($msg), 0, MW_IRC_HOST, MW_IRC_PORT);
+	@socket_sendto($sock, $msg, strlen($msg), 0, MW_IRC_HOST, MW_IRC_PORT);
 }
 
 ?>
