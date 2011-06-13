@@ -167,7 +167,7 @@ function mc()
 	{
 		if(!class_exists('Memcache'))
 			die('Class Memcache was not found. Disable Memcache in the config file or install Memcache.');
-		
+
 		$memcache = new Memcache;
 		foreach($GLOBALS['MEMCACHE_SERVERS'] as $m)
 			$memcache->addServer($m['host'], $m['port']);
@@ -226,6 +226,19 @@ class NullPheanstalk
 
 
 /**
+ * Returns a handle to the Redis client
+ */
+function redis()
+{
+	static $redis;
+	
+	if(!isset($redis))
+		$redis = new Predis\Client($GLOBALS['REDIS_CONFIG']);
+	
+	return $redis;
+}
+
+/**
  * For HTML formatting arrays for debugging
  */
 function pa($a)
@@ -253,4 +266,3 @@ function irc_debug($msg)
 	@socket_sendto($sock, $msg, strlen($msg), 0, MW_IRC_HOST, MW_IRC_PORT);
 }
 
-?>
