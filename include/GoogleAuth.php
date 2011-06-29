@@ -132,7 +132,8 @@ class GoogleAuth
 		if(is_object($token) && k($token, 'access_token'))
 		{
 			$this->accessToken = $token->access_token;
-			$this->refreshToken = $token->refresh_token;
+			if(property_exists($token, 'refresh_token'))
+				$this->refreshToken = $token->refresh_token;
 			return TRUE;
 		}
 		else
