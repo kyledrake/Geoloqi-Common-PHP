@@ -252,7 +252,7 @@ function pa($a)
  * Log to a MediaWiki RecentChanges bot.
  * http://www.mediawiki.org/wiki/Manual:MediaWiki-Recent_Changes-IRCBot
  */
-function irc_debug($msg)
+function irc_debug($msg, $channel=FALSE)
 {
 	if(!defined('MW_IRC_HOST') || MW_IRC_HOST == FALSE)
 		return FALSE;
@@ -261,7 +261,10 @@ function irc_debug($msg)
 	if($sock == FALSE)
 		$sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 
-	$msg = '[' . LOG_PREFIX . '] ' . $msg;
+	if($channel)
+		$msg = 'PRIV ' . $channel . ' [' . LOG_PREFIX . '] ' . $msg;
+	else
+		$msg = '[' . LOG_PREFIX . '] ' . $msg;
 	
 	@socket_sendto($sock, $msg, strlen($msg), 0, MW_IRC_HOST, MW_IRC_PORT);
 }
